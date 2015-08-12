@@ -21,26 +21,19 @@ def downloadFile(url):
     req.get_method = lambda : 'HEAD'
     response = urllib2.urlopen(req)
     total_length = int(response.info().getheader('Content-Length'))
-    print ''
+    print '\n\rHEAD Request response headers: '
     print response.info()
     print ('HEAD Request Elapsed time: ' + str(time.time()-start))
     # print (type(response.info()))
 
-    ### Define headers for request
-    # headers = { 'User-Agent' : 'Mozilla/4.0 (compatible; MSIE 5.5; Windows NT)-MikeBoss', \
-                # 'Range' : ('bytes=' + str(int(total_length)-1048576)+'-') }
-                # 'Range' : ('bytes=' + str(int(total_length)-1048576)+'-') }
-    # strheaders = str(headers)
-
-    ### Execute the GET request to download only the last 1MB of the file
-    data_list = []
+    ### Execute the byte-range GET request to download only the last 1MB of the file
+    # data_list = []   #This is in case you want to save the data downloaded
     bytes_downloaded = 0
     start = time.time()
-    # print strheaders
     
     ### Range is only 10MB from the end of the file
     range = 'bytes=' + str(int(total_length)-10485760)+'-'+ str(total_length)
-    print range
+    # print range   #Debug-line
     req = urllib2.Request(url)
     req.add_header('User-Agent', 'Mozilla/4.0 (compatible; MSIE 5.5; Windows NT)-MikeBoss')
     req.add_header('Range', range)
@@ -50,13 +43,17 @@ def downloadFile(url):
         bytes_downloaded += len(data)
         if not data:
             break
+        ### Uncomment the follwing lines to print results to screen and save data to dict
         # sys.stdout.write("Downloaded: " + str(bytes_downloaded))
         # sys.stdout.flush()
         # data_list.append(data)
-    
-    print "\nMBytes downloaded: " + str((int(total_length)-(int(total_length)-(10485760))/1048576))
-    print "Download Speed: " + str(((bytes_downloaded*8)/(1048576))/(time.time() - start))
-    print ("Time elapsed: " + str(time.time()-start))
+    endtime = time.time()
+    elapsed = endtime-start
+    dlspeed = (bytes_downloaded*8/1048576)/elapsed
+    print "Downloaded: " + str(round((bytes_downloaded/1048576), 2)) + " MBytes"#str(totaldl) +' MBytes'
+    # print "\nMBytes downloaded: " + str((int(total_length)-(int(total_length)-(10485760))/1048576))
+    print "Download Speed: " + str(round(dlspeed, 2)) + ' Mbps' #str(((bytes_downloaded*8)/(1048576))/(time.time() - start))
+    print "Time elapsed: " + str(round((endtime-start), 2)) + ' Seconds' #str(round((time.time()-start), 2)) + " seconds"
                 
 def Main():
     if len(sys.argv) > 1:
