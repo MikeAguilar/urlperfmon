@@ -27,25 +27,35 @@ def downloadFile(url):
     # print (type(response.info()))
 
     ### Define headers for request
-    headers = { 'User-Agent' : 'Mozilla/4.0 (compatible; MSIE 5.5; Windows NT)-MikeBoss', \
-                'Range' : ('bytes=' + str(int(total_length)-1048576)+'-') }
-    strheaders = str(headers)
+    # headers = { 'User-Agent' : 'Mozilla/4.0 (compatible; MSIE 5.5; Windows NT)-MikeBoss', \
+                # 'Range' : ('bytes=' + str(int(total_length)-1048576)+'-') }
+                # 'Range' : ('bytes=' + str(int(total_length)-1048576)+'-') }
+    # strheaders = str(headers)
 
     ### Execute the GET request to download only the last 1MB of the file
     data_list = []
-    bytes_so_far = 0
+    bytes_downloaded = 0
     start = time.time()
-    print strheaders
-    req = urllib2.Request(url, strheaders)
+    # print strheaders
+    
+    ### Range is only 10MB from the end of the file
+    range = 'bytes=' + str(int(total_length)-10485760)+'-'+ str(total_length)
+    print range
+    req = urllib2.Request(url)
+    req.add_header('User-Agent', 'Mozilla/4.0 (compatible; MSIE 5.5; Windows NT)-MikeBoss')
+    req.add_header('Range', range)
     response = urllib2.urlopen(req)
     while 1:
         data = response.read(1024)
-        bytes_so_far += len(data)
+        bytes_downloaded += len(data)
         if not data:
             break
-        sys.stdout.write("Downloaded: " + str(bytes_so_far))
-        data_list.append(data)
-
+        # sys.stdout.write("Downloaded: " + str(bytes_downloaded))
+        # sys.stdout.flush()
+        # data_list.append(data)
+    
+    print "\nMBytes downloaded: " + str((int(total_length)-(int(total_length)-(10485760))/1048576))
+    print "Download Speed: " + str(((bytes_downloaded*8)/(1048576))/(time.time() - start))
     print ("Time elapsed: " + str(time.time()-start))
                 
 def Main():
