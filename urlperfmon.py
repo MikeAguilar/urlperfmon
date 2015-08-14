@@ -33,7 +33,7 @@ def downloadFile(url):
     
     ### Range is only 10MB from the end of the file
     range = 'bytes=' + str(int(total_length)-10485760)+'-'+ str(total_length)
-    # print range   #Debug-line
+    print range   #Debug-line
     req = urllib2.Request(url)
     req.add_header('User-Agent', 'Mozilla/4.0 (compatible; MSIE 5.5; Windows NT)-MikeBoss')
     req.add_header('Range', range)
